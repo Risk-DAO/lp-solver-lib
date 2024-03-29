@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import { EOL } from "node:os";
 
 interface ProblemDetails {
   problem: string;
@@ -70,9 +70,9 @@ export interface OptimizationResult {
 }
 
 export function parseGMPLOutput(input: string): OptimizationResult {
-  const sections = input.split('\n\n');
+  const sections = input.split('' + EOL + '' + EOL + '');
 
-  const detailsSection = sections[0].split('\n').reduce((acc, line) => {
+  const detailsSection = sections[0].split('' + EOL + '').reduce((acc, line) => {
     const [key, value] = line.split(':').map(s => s.trim());
     if (key === 'Objective') {
       const match = /z = ([\d.]+) \((MAX|MIN)imum\)/.exec(value);
@@ -93,7 +93,7 @@ export function parseGMPLOutput(input: string): OptimizationResult {
 
   const parseSection = (section: string): any[] => {
     if (section === undefined) return [];
-    return section.split('\n').slice(2)
+    return section.split('' + EOL + '').slice(2)
       .filter(line => line != undefined)
       .map(line => {
         const parts = line.split(/\s+/).filter(Boolean);
@@ -111,19 +111,19 @@ export function parseGMPLOutput(input: string): OptimizationResult {
 
   const rowsSection = sections[1];
   const columnsSection = sections[2];
-  const kktSection = sections.slice(4, 8).join("\n");
+  const kktSection = sections.slice(4, 8).join(EOL);
 
   const rows = parseSection(rowsSection);
   const columns = parseSection(columnsSection);
 
   const parseKKT = (kktText: string) => {
-    if (kktText === undefined) return {};
-    const linesRaw = kktText.split('\n');
-    const lines = linesRaw.flatMap((_, i) => i % 3 === 0 ?  [linesRaw.slice(i, i + 3).join('\n')] : []);
+    if (kktText === undefined || kktText === '') return {};
+    const linesRaw = kktText.split('' + EOL + '');
+    const lines = linesRaw.flatMap((_, i) => i % 3 === 0 ?  [linesRaw.slice(i, i + 3).join('' + EOL + '')] : []);
     const kktConditions: any = {};
     lines.forEach(line => {
       const [key, ...rest] = line.split(':');
-      const [maxAbsErr, maxRelErr, quality] = rest.join(':').split('\n').map(s => s.trim());
+      const [maxAbsErr, maxRelErr, quality] = rest.join(':').split('' + EOL + '').map(s => s.trim());
       const errValues = maxAbsErr.split('=').flatMap(s => s.split("on").map(s2 => s2.trim()));
       const relValues = maxRelErr.split('=').flatMap(s => s.split("on").map(s2 => s2.trim()));
       kktConditions[key] = {
