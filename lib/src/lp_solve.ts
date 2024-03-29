@@ -30,6 +30,7 @@ export async function executeGLPSol(input: string): Promise<OptimizationResult> 
   }
 }
 
+/*
 async function test() {
   // Example usage:
   const input = fs.readFileSync("../test/model.mod", { encoding: 'utf-8' });
@@ -46,3 +47,4 @@ async function test() {
 }
 
 test();
+*/
