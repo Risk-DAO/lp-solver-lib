@@ -43,7 +43,13 @@ async function test() {
   res.details.problem = "override";
   baseline.details.problem = "override";
 
-  if(JSON.stringify(res) == JSON.stringify(baseline)) console.log("OK");
+  const res_string = JSON.stringify(res);
+
+  console.log("=== OUTPUT ===")
+  console.log(res_string);
+
+  if(res_string == JSON.stringify(baseline)) console.log("Equal to baseline");
+  else console.log("Non equal to baseline")
 }
 
 test();
