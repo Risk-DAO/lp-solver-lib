@@ -1,0 +1,27 @@
+{
+  "name": "lp_solve",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test-solver": "ts-node src/lp_solve.ts",
+    "test-parser": "ts-node src/parser.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/diff": "^5.0.9",
+    "diff": "^5.2.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
+  },
+  "compilerOptions": {
+    "esModuleInterop": true
+  }
+}
