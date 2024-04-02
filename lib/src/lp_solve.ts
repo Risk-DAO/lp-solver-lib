@@ -48,7 +48,9 @@ async function test() {
   console.log("=== OUTPUT ===")
   console.log(res_string);
 
-  if(res_string == JSON.stringify(baseline)) console.log("Equal to baseline");
+  fs.writeFileSync("res", JSON.stringify(res, null, 2), { encoding: 'utf-8' })
+
+  if (res_string == JSON.stringify(baseline)) console.log("Equal to baseline");
   else console.log("Non equal to baseline")
 }
 

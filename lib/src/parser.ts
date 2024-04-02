@@ -114,12 +114,29 @@ export function parseGMPLOutput(input: string): OptimizationResult {
   const kktSection = sections.slice(4, 8).join(EOL);
 
   const rows = parseSection(rowsSection);
-  const columns = parseSection(columnsSection);
+  const columnsRaw = parseSection(columnsSection);
+
+  let columns: Column[] = []
+
+  let index = -1;
+  
+  for (let columnRaw of columnsRaw) {
+    if (isNaN(columnRaw.no) && columnRaw.name == '0') {
+      columns[index].status = columnRaw.status;
+      columns[index].activity = columnRaw.activity;
+      columns[index].lowerBound = columnRaw.lowerBound;
+      columns[index].upperBound = columnRaw.upperBound;
+      columns[index].marginal = columnRaw.marginal;
+    } else {
+      index++;
+      columns[index] = columnRaw;
+    }
+  }
 
   const parseKKT = (kktText: string) => {
     if (kktText === undefined || kktText === '') return {};
     const linesRaw = kktText.split('' + EOL + '');
-    const lines = linesRaw.flatMap((_, i) => i % 3 === 0 ?  [linesRaw.slice(i, i + 3).join('' + EOL + '')] : []);
+    const lines = linesRaw.flatMap((_, i) => i % 3 === 0 ? [linesRaw.slice(i, i + 3).join('' + EOL + '')] : []);
     const kktConditions: any = {};
     lines.forEach(line => {
       const [key, ...rest] = line.split(':');
