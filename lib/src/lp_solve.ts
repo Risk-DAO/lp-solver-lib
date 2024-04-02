@@ -21,8 +21,8 @@ export async function executeGLPSol(input: string): Promise<OptimizationResult> 
     const stdout = await fs.promises.readFile(outputFileName, 'utf-8');
 
     // Remove input and output files
-    // await fs.promises.unlink(inputFileName);
-    // await fs.promises.unlink(outputFileName);
+    await fs.promises.unlink(inputFileName);
+    await fs.promises.unlink(outputFileName);
 
     return parseGMPLOutput(stdout);
   } catch (error) {
