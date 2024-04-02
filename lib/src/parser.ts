@@ -92,22 +92,49 @@ export function parseGMPLOutput(input: string): OptimizationResult {
   }, {} as any);
 
   const parseSection = (section: string): any[] => {
-    if (section === undefined) return [];
-    return section.split('' + EOL + '').slice(2)
-      .filter(line => line != undefined)
-      .map(line => {
-        const parts = line.split(/\s+/).filter(Boolean);
-        return {
-          no: parseInt(parts[0], 10),
-          name: parts[1],
-          status: parts[2],
-          activity: parseFloat(parts[3]),
-          lowerBound: parts[4] !== '-' ? parseFloat(parts[4]) : undefined,
-          upperBound: parts[5] !== '-' ? parseFloat(parts[5]) : undefined,
-          marginal: parts[6] !== '-' ? parseFloat(parts[6]) : undefined,
+    const lines = section.split(EOL);
+    const records: Column[] = [];
+    let currentRecord: Partial<Column> = {};
+
+    const lineRegex = /^\s*(\d+)\s+(\S+)\s*(\S*)\s*(\S*)\s*(\d+)\s*(\d+)\s*(\-?\d+\.?\d*)\s*$/;
+    const continuationRegex = /^\s*(\S+)\s*(\d+)\s*(\d+)\s*(\-?\d+\.?\d*)\s*$/;
+
+    for (let line of lines) {
+      let match = line.match(lineRegex);
+      if (match) {
+        // Starting a new record
+        if (Object.keys(currentRecord).length !== 0) {
+          records.push(currentRecord as Column);
+          currentRecord = {};
+        }
+        currentRecord = {
+          no: parseInt(match[1]),
+          name: match[2],
+          status: match[3],
+          activity: parseFloat(match[4]),
+          lowerBound: parseInt(match[5]),
+          upperBound: parseInt(match[6]),
+          marginal: parseFloat(match[7])
         };
-      });
-  };
+      } else {
+        match = line.match(continuationRegex);
+        if (match) {
+          // Continuation of the previous line, usually for long column names
+          currentRecord.name += match[1];
+          currentRecord.status = match[2];
+          currentRecord.activity = parseFloat(match[3]);
+          currentRecord.marginal = parseFloat(match[4]);
+        }
+      }
+    }
+
+    // Add the last record if exists
+    if (Object.keys(currentRecord).length !== 0) {
+      records.push(currentRecord as Column);
+    }
+
+    return records;
+  }
 
   const rowsSection = sections[1];
   const columnsSection = sections[2];
@@ -119,7 +146,7 @@ export function parseGMPLOutput(input: string): OptimizationResult {
   const parseKKT = (kktText: string) => {
     if (kktText === undefined || kktText === '') return {};
     const linesRaw = kktText.split('' + EOL + '');
-    const lines = linesRaw.flatMap((_, i) => i % 3 === 0 ?  [linesRaw.slice(i, i + 3).join('' + EOL + '')] : []);
+    const lines = linesRaw.flatMap((_, i) => i % 3 === 0 ? [linesRaw.slice(i, i + 3).join('' + EOL + '')] : []);
     const kktConditions: any = {};
     lines.forEach(line => {
       const [key, ...rest] = line.split(':');
