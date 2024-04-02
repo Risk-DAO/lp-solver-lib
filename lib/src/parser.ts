@@ -96,7 +96,7 @@ export function parseGMPLOutput(input: string): OptimizationResult {
     const records: Column[] = [];
     let currentRecord: Partial<Column> = {};
 
-    const lineRegex = /^\s*(\d+)\s+(\S+)\s*(\S*)\s*(\S*)\s*(\d+)\s*(\d+)\s*(\-?\d+\.?\d*)\s*$/;
+    const lineRegex = /^\s*(\d+)\s+(\S+)\s*($|(\S*)\s*(\S*)\s*(\d+)\s*(\d+)\s*(\-?\d+\.?\d*)\s*$)/;
     const continuationRegex = /^\s*(\S+)\s*(\d+)\s*(\d+)\s*(\-?\d+\.?\d*)\s*$/;
 
     for (let line of lines) {
@@ -111,18 +111,18 @@ export function parseGMPLOutput(input: string): OptimizationResult {
           no: parseInt(match[1]),
           name: match[2],
           status: match[3],
-          activity: parseFloat(match[4]),
-          lowerBound: parseInt(match[5]),
-          upperBound: parseInt(match[6]),
-          marginal: parseFloat(match[7])
+          activity: match[4] === undefined ? undefined : parseFloat(match[4]),
+          lowerBound: match[5] === undefined ? undefined : parseInt(match[5]),
+          upperBound: match[6] === undefined ? undefined : parseInt(match[6]),
+          marginal: match[7] === undefined ? undefined : parseFloat(match[7])
         };
       } else {
         match = line.match(continuationRegex);
         if (match) {
           // Continuation of the previous line, usually for long column names
-          currentRecord.name += match[1];
-          currentRecord.status = match[2];
-          currentRecord.activity = parseFloat(match[3]);
+          currentRecord.status = match[1];
+          currentRecord.lowerBound = parseInt(match[2]),
+          currentRecord.upperBound = parseInt(match[3]),
           currentRecord.marginal = parseFloat(match[4]);
         }
       }

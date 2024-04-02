@@ -43,7 +43,9 @@ async function test() {
   res.details.problem = "override";
   baseline.details.problem = "override";
 
-  const res_string = JSON.stringify(res);
+  const res_string = JSON.stringify(res, null, 2);
+
+  fs.writeFileSync("result", res_string);
 
   console.log("=== OUTPUT ===")
   console.log(res_string);
