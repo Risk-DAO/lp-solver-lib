@@ -91,22 +91,49 @@ export function parseGMPLOutput(input: string): OptimizationResult {
     return acc;
   }, {} as any);
 
-  const parseSection = (section: string): any[] => {
+  const parseSection = (section: string): Column[] => {
+    let records: Column[] = [];
+
     if (section === undefined) return [];
-    return section.split('' + EOL + '').slice(2)
+    section.split('' + EOL + '').slice(2)
       .filter(line => line != undefined)
       .map(line => {
-        const parts = line.split(/\s+/).filter(Boolean);
-        return {
-          no: parseInt(parts[0], 10),
-          name: parts[1],
-          status: parts[2],
-          activity: parseFloat(parts[3]),
-          lowerBound: parts[4] !== '-' ? parseFloat(parts[4]) : undefined,
-          upperBound: parts[5] !== '-' ? parseFloat(parts[5]) : undefined,
-          marginal: parts[6] !== '-' ? parseFloat(parts[6]) : undefined,
-        };
+
+        const startName = 7;
+        const endName = 20;
+        const isNewRecord = line.substring(0, startName).trim().length > 0;
+
+        if (isNewRecord) {
+          const nameCut = line.substring(startName, endName).trim();
+
+          // New record
+          const record = {
+            no: parseInt(line.substring(0, startName).trim()),
+            name: nameCut,
+            status: line.substring(endName, 22).trim(),
+            activity: parseFloat(line.substring(24, 24 + 12).trim()),
+            lowerBound: parseFloat(line.substring(38, 38 + 12).trim()),
+            upperBound: parseFloat(line.substring(52, 52 + 12).trim()),
+            marginal: parseFloat(line.substring(66).trim())
+          };
+
+          if(nameCut.length == endName - startName) {
+            record.name = line.substring(startName, line.length);
+          }
+
+          records.push(record);
+        } else {
+          // Continuation of the last record
+          const lastRecord = records[records.length - 1];
+          lastRecord.status = line.substring(20, 22).trim();
+          lastRecord.activity = parseFloat(line.substring(24, 24 + 12).trim());
+          lastRecord.lowerBound = parseFloat(line.substring(38, 38 + 12).trim());
+          lastRecord.upperBound = parseFloat(line.substring(52, 52 + 12).trim());
+          lastRecord.marginal = parseFloat(line.substring(66).trim());
+        }
       });
+
+    return records;
   };
 
   const rowsSection = sections[1];
@@ -114,24 +141,7 @@ export function parseGMPLOutput(input: string): OptimizationResult {
   const kktSection = sections.slice(4, 8).join(EOL);
 
   const rows = parseSection(rowsSection);
-  const columnsRaw = parseSection(columnsSection);
-
-  let columns: Column[] = []
-
-  let index = -1;
-  
-  for (let columnRaw of columnsRaw) {
-    if (isNaN(columnRaw.no) && columnRaw.name == '0') {
-      columns[index].status = columnRaw.status;
-      columns[index].activity = columnRaw.activity;
-      columns[index].lowerBound = columnRaw.lowerBound;
-      columns[index].upperBound = columnRaw.upperBound;
-      columns[index].marginal = columnRaw.marginal;
-    } else {
-      index++;
-      columns[index] = columnRaw;
-    }
-  }
+  const columns = parseSection(columnsSection);
 
   const parseKKT = (kktText: string) => {
     if (kktText === undefined || kktText === '') return {};
