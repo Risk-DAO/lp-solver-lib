@@ -26,24 +26,45 @@ export async function executeGLPSol(input: string): Promise<OptimizationResult> 
 
     return parseGMPLOutput(stdout);
   } catch (error) {
-    throw `Error executing GLPSol: ${error}`;
+    throw `Error executing GLPSol: ${(error as any).stdout}`;
   }
 }
 
 /*
 async function test() {
   // Example usage:
-  const input = fs.readFileSync("../test/model.mod", { encoding: 'utf-8' });
-  const res = await executeGLPSol(input)
+  let input = fs.readFileSync("../test/model.mod", { encoding: 'utf-8' });
+  let res = await executeGLPSol(input)
 
-  const baseline = parseGMPLOutput(
+  let baseline = parseGMPLOutput(
     fs.readFileSync("../test/model.output", { encoding: 'utf-8' })
   );
 
   res.details.problem = "override";
   baseline.details.problem = "override";
 
-  const res_string = JSON.stringify(res);
+  let res_string = JSON.stringify(res);
+
+  console.log("=== OUTPUT ===")
+  console.log(res_string);
+
+  fs.writeFileSync("res", JSON.stringify(res, null, 2), { encoding: 'utf-8' })
+
+  if (res_string == JSON.stringify(baseline)) console.log("Equal to baseline");
+  else console.log("Non equal to baseline")
+
+  // Failure test
+  input = fs.readFileSync("../test/model_fail.mod", { encoding: 'utf-8' });
+  res = await executeGLPSol(input)
+
+  baseline = parseGMPLOutput(
+    fs.readFileSync("../test/model_fail.output", { encoding: 'utf-8' })
+  );
+
+  res.details.problem = "override";
+  baseline.details.problem = "override";
+
+  res_string = JSON.stringify(res);
 
   console.log("=== OUTPUT ===")
   console.log(res_string);
