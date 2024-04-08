@@ -1,6 +1,6 @@
 {
-  "name": "lp_solve",
-  "version": "1.0.0",
+  "name": "@3lden/lp_solve",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -22,5 +22,6 @@
   },
   "compilerOptions": {
     "esModuleInterop": true
-  }
+  },
+  "main": "build/lp_solve.js"
 }
