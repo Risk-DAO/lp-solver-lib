@@ -1,3 +1,4 @@
 lib/node_modules
 glpk
 build
+lib/build/*

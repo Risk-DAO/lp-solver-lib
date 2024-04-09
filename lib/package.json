@@ -1,8 +1,7 @@
 {
   "name": "@3lden/lp_solve",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "test-solver": "ts-node src/lp_solve.ts",
     "test-parser": "ts-node src/parser.ts"
@@ -10,15 +9,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "typescript": "^5.3.3",
-    "uuid": "^9.0.1"
+    "typescript": "^5.3.3"
   },
   "devDependencies": {
     "@types/diff": "^5.0.9",
+    "@types/uuid": "^9.0.8",
     "diff": "^5.2.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.7.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "uuid": "^9.0.1"
   },
   "compilerOptions": {
     "esModuleInterop": true

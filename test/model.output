@@ -161,7 +161,8 @@ Objective:  z = 166.3921566 (MAXimum)
 
    No. Column name  St   Activity     Lower bound   Upper bound    Marginal
 ------ ------------ -- ------------- ------------- ------------- -------------
-     1 eth_1_dai    NL             0             0                  -0.0206186 
+     1 eth_1_dai_haaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                    NL             0             0                  -0.0206186 
      2 eth_2_dai    NL             0             0                  -0.0305113 
      3 eth_3_dai    NL             0             0                   -0.040404 
      4 eth_4_dai    NL             0             0                  -0.0502968 
