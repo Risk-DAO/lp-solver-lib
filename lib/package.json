@@ -1,6 +1,6 @@
 {
   "name": "@3lden/lp_solve",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "scripts": {
     "test-solver": "ts-node src/lp_solve.ts",
