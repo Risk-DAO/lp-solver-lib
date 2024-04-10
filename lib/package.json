@@ -1,10 +1,11 @@
 {
   "name": "@3lden/lp_solve",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "scripts": {
     "test-solver": "ts-node src/lp_solve.ts",
-    "test-parser": "ts-node src/parser.ts"
+    "test-parser": "ts-node src/parser.ts",
+    "build": "npx tsc"
   },
   "author": "",
   "license": "ISC",
