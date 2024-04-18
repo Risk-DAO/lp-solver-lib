@@ -4,8 +4,7 @@ The following code works on Windows. It has not been tested on Unix.
 
 # Installation
 
-Download http://sourceforge.net/projects/winglpk/
-Unzip and put the w64 folder in the PATH
+Download http://sourceforge.net/projects/winglpk/, unzip it and put the w64 folder in your PATH.
 
 To install the npm dependencies of the project:
 ```
