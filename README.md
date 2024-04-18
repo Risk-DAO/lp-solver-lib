@@ -1,6 +1,6 @@
 # Installation
 
-Please check the `install_glpk.sh` file to install GLPK.
+For Windows, you will need to install GLPK using chocolatey. For Uniw, please check the `install_glpk.sh` file.
 
 To install the npm dependencies of the project:
 ```
