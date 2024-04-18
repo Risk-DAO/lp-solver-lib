@@ -1,10 +1,10 @@
 # Foreword
 
-The following code works on Windows. It has not been tested on Unix.
+The following code works on Unix. It has not been tested on Windows.
 
 # Installation
 
-Download http://sourceforge.net/projects/winglpk/, unzip it and put the w64 folder in your PATH.
+Please check the `install_glpk.sh` file to install GLPK.
 
 To install the npm dependencies of the project:
 ```
