@@ -4,31 +4,36 @@ import { OptimizationResult, parseGMPLOutput } from './parser';
 import process from 'node:child_process'
 import util from "node:util";
 
-import { v4 as uuidv4 } from 'uuid';
-
 const execPromise = util.promisify(process.exec);
 
-export async function executeGLPSol(input: string): Promise<OptimizationResult> {
+export async function executeGLPSol(input: string, keepComputationFiles: boolean = false): Promise<OptimizationResult> {
+  const uuid = crypto.randomUUID();
+  const inputFileName = 'input-' + uuid;
+  const outputFileName = 'output-' + uuid;
+
+  // Write input content to input.mod file
+  await fs.promises.writeFile(inputFileName, input);
+
   try {
-    const uuid = uuidv4();
-    const inputFileName = 'input-' + uuid;
-    const outputFileName = 'output-' + uuid;
-
-    // Write input content to input.mod file
-    await fs.promises.writeFile(inputFileName, input);
-
     // Execute glpsol command
     await execPromise(`glpsol --math ${inputFileName} --output ${outputFileName}`);
 
     // Read output file content
     const stdout = await fs.promises.readFile(outputFileName, 'utf-8');
 
-    // // Remove input and output files
-    await fs.promises.unlink(inputFileName);
-    await fs.promises.unlink(outputFileName);
+    if (!keepComputationFiles) {
+      // // Remove input and output files
+      await fs.promises.unlink(inputFileName);
+      await fs.promises.unlink(outputFileName);
+    }
 
     return parseGMPLOutput(stdout);
   } catch (error) {
+    if (!keepComputationFiles) {
+      // // Remove input file
+      await fs.promises.unlink(inputFileName);
+    }
+
     throw `Error executing GLPSol: ${(error as any).stdout}`;
   }
 }
@@ -37,7 +42,7 @@ export async function executeGLPSol(input: string): Promise<OptimizationResult> 
 async function test() {
   // Example usage:
   let input = fs.readFileSync("../test/model.mod", { encoding: 'utf-8' });
-  let res = await executeGLPSol(input)
+  let res = await executeGLPSol(input, false)
 
   let baseline = parseGMPLOutput(
     fs.readFileSync("../test/model.output", { encoding: 'utf-8' })
@@ -59,7 +64,7 @@ async function test() {
   try {
     // Failure test
     input = fs.readFileSync("../test/model_fail.mod", { encoding: 'utf-8' });
-    res = await executeGLPSol(input)
+    res = await executeGLPSol(input, false)
   } catch (e) {
     console.log("Failed as expected");
   }
